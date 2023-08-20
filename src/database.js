@@ -7,7 +7,7 @@ async function databaseConnect(databaseURL){
 
 // Database Disconnect function
 async function databaseDisconnect(){
-    await mongoose.connect.close();
+    await mongoose.connection.close();
 }
 
 

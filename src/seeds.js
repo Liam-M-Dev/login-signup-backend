@@ -59,7 +59,10 @@ databaseConnect(databaseURL)
         console.log("Old database data dropped");
     }
 }).then( async () => {
-    for (const user of users) {
-        
-    }
-})
+    // Add in method to hash password for users when implemented in controllers/middleware
+    await UserModel.insertMany(users);
+    console.log("New database created")
+}).then(() => {
+    databaseDisconnect();
+    console.log("Database disconnected");
+}).catch(error => console.log(`Error occurred: \n ${error}`));
