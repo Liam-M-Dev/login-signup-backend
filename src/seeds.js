@@ -1,7 +1,10 @@
+// Import mongoose
 const mongoose = require("mongoose");
+// Import functions to connect and disconnect database
 const {databaseConnect, databaseDisconnect} = require("./database");
-
+// Import user model and hashString function
 const {UserModel} = require("./models/User");
+const {hashString} = require("./services/AuthServices");
 
 const dotenv = require("dotenv");
 dotenv.config();
@@ -50,16 +53,21 @@ databaseConnect(databaseURL)
 }).catch(error => console.log(`Error occurred: \n ${error}`))
 .then(async () => {
     if (process.env.WIPE == "true"){
-        const collections = await mongoose.collections.db.listCollections().toArray();
+        const collections = await mongoose.connection.db.listCollections().toArray();
 
         collections.map((collection) => collection.name)
         .forEach(async (collectionName) => {
-            mongoose.collection.db.dropCollection(collectionName);
+            mongoose.connection.db.dropCollection(collectionName);
         });
         console.log("Old database data dropped");
     }
 }).then( async () => {
-    // Add in method to hash password for users when implemented in controllers/middleware
+    
+    for (const user of users) {
+        let hashedPassword = await hashString(user.password);
+        user.password = hashedPassword;
+    }
+
     await UserModel.insertMany(users);
     console.log("New database created")
 }).then(() => {
