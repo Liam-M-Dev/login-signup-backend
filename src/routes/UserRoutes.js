@@ -1,10 +1,14 @@
 const express = require("express");
 const router = express.Router();
 
+// Imported functions from UserController
 const {
     getAllUsers,
     loginUser
 } = require("../controllers/UserController")
+
+// Imported middleware
+
 
 // Route to get all users
 // Made for development purposes.
