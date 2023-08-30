@@ -3,20 +3,34 @@ const { UserModel } = require("../models/User");
 const { validateHashData } = require("../services/AuthServices");
 
 // Middleware to confirm fields for sign-up meet requirements (work in progress)
-// const checkUserFields = async (request, response, next) => {
-//     const {email, password} = request.body;
+const checkUserFields = (request, response, next) => {
+    const {email, password, firstName, lastName, userName} = request.body;
 
-//     if (!email || !password){
-//         let error = new Error({message: "Missing password or email"});
-//         error.statusCode = 400
-//         next(error)
-//     }
+    if (!email || !password || !firstName || !lastName || !userName){
+        let error = new Error("Missing fields");
+        error.statusCode = 400;
+        next(error);
+    }
 
-//     if (email)
+    next();
+}
 
-//     next()
-
-// }
+const checkValidEmailOrUsername = async (request, response, next) => {
+    let savedUser = await UserModel.findOne({email: request.body.email}).exec();
+    if (savedUser) {
+        let error = new Error("Email already in use");
+        error.statusCode = 400;
+        next(error);
+    }
+    
+    savedUser = await UserModel.findOne({userName: request.body.userName}).exec();
+    if (savedUser) {
+        let error = new Error("Username already in use");
+        error.statusCode = 400;
+        next(error);
+    }
+    next();
+}
 
 // Login specific middleware,
 // Checks request body email matches with user email within database
@@ -43,5 +57,7 @@ const loginMiddleware = async (request, response, next) => {
 
 
 module.exports = {
+    checkUserFields,
+    checkValidEmailOrUsername,
     loginMiddleware
 }
