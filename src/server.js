@@ -57,6 +57,18 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
+// User Router
+const userRouter = require("./routes/UserRoutes");
+app.use("/users", userRouter);
+
+// Error handler
+app.use((error, request, response, next) => {
+    response.status(error.statusCode).json({
+        message: error.message,
+        statusCode: error.statusCode
+    })
+})
+
 app.get("/", (request, response) => {
     response.json({
         message: "Hello World"
