@@ -8,7 +8,14 @@ const {
 } = require("../controllers/UserController")
 
 // Imported middleware
+const {
+    loginMiddleware
+} = require("../middleware/UserMiddleware");
 
+// const {
+//     errorsArray,
+//     errorsLength
+// } = require("../middleware/ErrorHandling");
 
 // Route to get all users
 // Made for development purposes.
@@ -22,7 +29,10 @@ router.get("/", getAllUsers);
 // Route to allow login of single user
 // Takes login information and runs through middleware, 
 // returns authentication data.
-router.post("/login", loginUser);
+router.post("/login", 
+    loginMiddleware, 
+    loginUser
+);
 
 // // Route to allow user creation
 // // Takes data from request, validate through middleware,

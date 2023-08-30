@@ -27,13 +27,13 @@ const { validateHashData } = require("../services/AuthServices");
 const loginMiddleware = async (request, response, next) => {
     const savedUser = await UserModel.findOne({email: request.body.email});
     if (!savedUser){
-        let error = new Error({message: "Incorrect email, try again"});
+        let error = new Error("Incorrect email, try again");
         error.statusCode = 400;
         next(error);
     } else {
         let validPassword = await validateHashData(request.body.password, savedUser.password);
         if (!validPassword){
-            let error = new Error({message: "Invalid Password"});
+            let error = new Error("Incorrect password, try again");
             error.statusCode = 400;
             next(error);
         }
@@ -41,3 +41,7 @@ const loginMiddleware = async (request, response, next) => {
     }
 }
 
+
+module.exports = {
+    loginMiddleware
+}
