@@ -15,6 +15,12 @@ const checkUserFields = (request, response, next) => {
     next();
 }
 
+// Checks email format against regular expression, 
+// returns a true or false, runs if statement to check if email is valid
+// Checks database for user related to email, 
+// if an email already exists throws error.
+// Regular expression provided from Email Validation: Regex & JavaScript
+// https://www.abstractapi.com/guides/email-validation-regex-javascript Author Elizabeth Shipton Aug 03 2023
 const checkValidEmail = async (request, response, next) => {
     const regEx = 
         new RegExp(/^[A-Za-z0-9_!#$%&'*+\/=?`{|}~^.-]+@[A-Za-z0-9.-]+$/, "gm");
@@ -36,6 +42,8 @@ const checkValidEmail = async (request, response, next) => {
     next();
 }
 
+// Checks database for user with associated username,
+// Throws error if user exists
 const checkValidUsername = async (request, response, next) => {
     let savedUserName = await UserModel.findOne({userName: request.body.userName}).exec();
     if (savedUserName) {
