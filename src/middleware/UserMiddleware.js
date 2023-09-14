@@ -55,6 +55,21 @@ const checkValidUsername = async (request, response, next) => {
     next();
 }
 
+// Checks password length - Due to this being a simple login/signup app
+// Decided to leave passwords to basic passwords.
+const passwordLengthCheck = async (request, response, next) => {
+    const {password} = request.body
+    
+    if (password.length < 8) {
+        let error = new Error("Password must be 8 characters or more");
+        error.statusCode = 400;
+        next(error);
+    }
+
+    next();
+}
+
+
 // Login specific middleware,
 // Checks request body email matches with user email within database
 // Checks request body password matches with stored password, 
@@ -83,5 +98,6 @@ module.exports = {
     checkUserFields,
     checkValidEmail,
     checkValidUsername,
+    passwordLengthCheck,
     loginMiddleware
 }

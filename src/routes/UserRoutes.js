@@ -11,7 +11,7 @@ const {
 // Imported middleware
 const {
     loginMiddleware, checkUserFields, checkValidEmail,
-    checkValidUsername
+    checkValidUsername, passwordLengthCheck
 } = require("../middleware/UserMiddleware");
 
 // const {
@@ -43,6 +43,7 @@ router.post("/signup",
     checkUserFields, 
     checkValidEmail, 
     checkValidUsername,
+    passwordLengthCheck,
     userCreation
 );
 
