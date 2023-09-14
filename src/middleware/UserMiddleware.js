@@ -15,20 +15,35 @@ const checkUserFields = (request, response, next) => {
     next();
 }
 
-const checkValidEmailOrUsername = async (request, response, next) => {
-    let savedUser = await UserModel.findOne({email: request.body.email}).exec();
-    if (savedUser) {
+const checkValidEmail = async (request, response, next) => {
+    const regEx = 
+        new RegExp(/^[A-Za-z0-9_!#$%&'*+\/=?`{|}~^.-]+@[A-Za-z0-9.-]+$/, "gm");
+    const isValidEmail = regEx.test(request.body.email);
+
+    if (!isValidEmail){
+        let error = new Error("Incorrect Email format");
+        error.statusCode = 400;
+        next(error);
+    }
+
+    let savedUserEmail = await UserModel.findOne({email: request.body.email}).exec();
+    if (savedUserEmail) {
         let error = new Error("Email already in use");
         error.statusCode = 400;
         next(error);
     }
-    
-    savedUser = await UserModel.findOne({userName: request.body.userName}).exec();
-    if (savedUser) {
+
+    next();
+}
+
+const checkValidUsername = async (request, response, next) => {
+    let savedUserName = await UserModel.findOne({userName: request.body.userName}).exec();
+    if (savedUserName) {
         let error = new Error("Username already in use");
         error.statusCode = 400;
         next(error);
     }
+
     next();
 }
 
@@ -58,6 +73,7 @@ const loginMiddleware = async (request, response, next) => {
 
 module.exports = {
     checkUserFields,
-    checkValidEmailOrUsername,
+    checkValidEmail,
+    checkValidUsername,
     loginMiddleware
 }

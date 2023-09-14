@@ -10,7 +10,8 @@ const {
 
 // Imported middleware
 const {
-    loginMiddleware, checkUserFields, checkValidEmailOrUsername
+    loginMiddleware, checkUserFields, checkValidEmail,
+    checkValidUsername
 } = require("../middleware/UserMiddleware");
 
 // const {
@@ -40,7 +41,8 @@ router.post("/login",
 // // returns authentication data
 router.post("/signup",
     checkUserFields, 
-    checkValidEmailOrUsername, 
+    checkValidEmail, 
+    checkValidUsername,
     userCreation
 );
 
