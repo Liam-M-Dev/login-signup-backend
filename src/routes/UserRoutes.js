@@ -4,12 +4,14 @@ const router = express.Router();
 // Imported functions from UserController
 const {
     getAllUsers,
-    loginUser
+    loginUser,
+    userCreation
 } = require("../controllers/UserController")
 
 // Imported middleware
 const {
-    loginMiddleware
+    loginMiddleware, checkUserFields, checkValidEmail,
+    checkValidUsername, passwordLengthCheck
 } = require("../middleware/UserMiddleware");
 
 // const {
@@ -37,7 +39,13 @@ router.post("/login",
 // // Route to allow user creation
 // // Takes data from request, validate through middleware,
 // // returns authentication data
-// router.post("/signup", userCreation);
+router.post("/signup",
+    checkUserFields, 
+    checkValidEmail, 
+    checkValidUsername,
+    passwordLengthCheck,
+    userCreation
+);
 
 
 module.exports = router;
