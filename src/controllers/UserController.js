@@ -47,7 +47,7 @@ const loginUser = async (request, response) => {
         response.status(200)
         .cookie("access_token", token, {
             httpOnly: true,
-            // secure: true
+            secure: process.env.NODE_ENV === "production",
             sameSite: "strict"
         })
         .json({message: `welcome ${savedUser.userName}!`});
@@ -76,7 +76,18 @@ const userCreation = (async (request, response) => {
         let userSaved = new UserModel(newUser);
         await userSaved.save();
         console.log(userSaved);
-        response.status(200).json({
+        
+        let token = generateUserJWT({
+            userId: userSaved.id,
+            userName: userSaved.userName
+        })
+        response.status(200)
+        .cookie("access_token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict"
+        })
+        .json({
             message: "User saved successfully"
         });
 
