@@ -5,13 +5,14 @@ const router = express.Router();
 const {
     getAllUsers,
     loginUser,
-    userCreation
+    userCreation,
+    getUserById
 } = require("../controllers/UserController")
 
 // Imported middleware
 const {
     loginMiddleware, checkUserFields, checkValidEmail,
-    checkValidUsername, passwordLengthCheck
+    checkValidUsername, passwordLengthCheck, verifyAndExtractUserData
 } = require("../middleware/UserMiddleware");
 
 // const {
@@ -26,7 +27,7 @@ router.get("/", getAllUsers);
 
 // // Route to get single user
 // // returns username of user to display in frontend component
-// router.get("/user", getSingleUser);
+router.get("/user", verifyAndExtractUserData, getUserById);
 
 // Route to allow login of single user
 // Takes login information and runs through middleware, 

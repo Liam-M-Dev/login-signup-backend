@@ -1,6 +1,6 @@
 const { UserModel } = require("../models/User");
 
-const { validateHashData } = require("../services/AuthServices");
+const { validateHashData, verifyUserJWT } = require("../services/AuthServices");
 
 // Middleware to confirm fields for sign-up meet requirements (work in progress)
 const checkUserFields = (request, response, next) => {
@@ -93,11 +93,32 @@ const loginMiddleware = async (request, response, next) => {
     }
 }
 
+// Function to verify userJWT and pass userId and details to controller
+const verifyAndExtractUserData = async (response, request, next) => {
+    let token = request.cookies.access_token;
+    console.log(token)
+    if (!token){
+        let error = new Error("No Valid access token, please sign up");
+        error.statusCode = 403;
+        next(error);
+    }
+    next();
+    // try {
+    //     let userData = await verifyUserJWT(token);
+    //     request.userID = userData.id;
+    //     request.userName = userData.userName;
+    //     next();
+    // } catch (error) {
+    //     console.log(error);
+    // }
+}
+
 
 module.exports = {
     checkUserFields,
     checkValidEmail,
     checkValidUsername,
     passwordLengthCheck,
-    loginMiddleware
+    loginMiddleware,
+    verifyAndExtractUserData
 }

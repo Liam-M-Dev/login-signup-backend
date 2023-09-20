@@ -18,7 +18,7 @@ const getAllUsers = async (request, response) => {
 // Intended data to be exposed for client side will be username
 const getUserById = async (request, response) => {
     try {
-        const savedUser = await UserModel.find({id: request.body.id}).exec();
+        const savedUser = await UserModel.find({id: request.body.userID}).exec();
         
         if (savedUser) {
             response.json({userName: savedUser.userName});
