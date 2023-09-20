@@ -57,6 +57,10 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
+// enable cookie-parser for use in app functionality
+const cookieParser = require("cookie-parser");
+app.use(cookieParser());
+
 // User Router
 const userRouter = require("./routes/UserRoutes");
 app.use("/users", userRouter);

@@ -63,7 +63,7 @@ async function verifyUserJWT(userJWT){
     let targetUser = await UserModel.findById(userData.userID).exec();
 
     if (targetUser){
-        return generateUserJWT({data: userJwtVerified.payload.data});
+        return userData;
     } else {
         let error = new Error("Invalid Access");
         error.statusCode = 401;

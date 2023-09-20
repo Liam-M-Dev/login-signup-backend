@@ -1,6 +1,6 @@
 // Import user model
 const {UserModel} = require("../models/User");
-const { hashString } = require("../services/AuthServices");
+const { hashString, generateUserJWT } = require("../services/AuthServices");
 
 // Basic function to get all users
 // Returns list of users for development purposes, will remove at later date
@@ -14,6 +14,24 @@ const getAllUsers = async (request, response) => {
     }    
 }
 
+// Function to return a single user from database
+// Intended data to be exposed for client side will be username
+const getUserById = async (request, response) => {
+    try {
+        const savedUser = await UserModel.find({id: request.body.id}).exec();
+        
+        if (savedUser) {
+            response.json({userName: savedUser.userName});
+        } else {
+            response.status(404).json({message: "No user found in database"});
+        }
+
+    } catch (error) {
+        console.log(error.message);
+        response.status(400).json({message: "Error occurred!"})
+    }
+}
+
 // function to login user takes request data and confirms user exists in database,
 // validation checks run through middleware.
 // Returns welcome message with JWT return to be implemented
@@ -21,8 +39,18 @@ const loginUser = async (request, response) => {
     try {
         let savedUser = await UserModel.findOne({email: request.body.email}).exec();
 
-        // *To Do* Implement JWT generation and attach in response method 
-        response.status(200).json({message: `welcome ${savedUser.userName}!`});
+        let token = generateUserJWT({
+            userId: savedUser.id,
+            userName: savedUser.userName
+        })
+        
+        response.status(200)
+        .cookie("access_token", token, {
+            httpOnly: true,
+            // secure: true
+            sameSite: "strict"
+        })
+        .json({message: `welcome ${savedUser.userName}!`});
     } catch (error) {
         console.log(error)
         response.status(404).json({message: "User not found", error: error.message});
@@ -63,6 +91,7 @@ const userCreation = (async (request, response) => {
 
 module.exports = {
     getAllUsers,
+    getUserById,
     loginUser,
     userCreation
 }
