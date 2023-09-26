@@ -1,6 +1,6 @@
 // Import user model
 const {UserModel} = require("../models/User");
-const { hashString, generateUserJWT } = require("../services/AuthServices");
+const { hashString, generateUserJWT, verifyUserJWT } = require("../services/AuthServices");
 
 // Basic function to get all users
 // Returns list of users for development purposes, will remove at later date
@@ -18,18 +18,18 @@ const getAllUsers = async (request, response) => {
 // Intended data to be exposed for client side will be username
 const getUserById = async (request, response) => {
     try {
-        const savedUser = await UserModel.find({id: request.body.userID}).exec();
-        
-        if (savedUser) {
-            response.json({userName: savedUser.userName});
+        let token = request.cookies.access_token;
+        if (!token){
+            response.status(403).json({message: "No valid token, please sign in or sign up"})
         } else {
-            response.status(404).json({message: "No user found in database"});
+            let userData = await verifyUserJWT(token);
+            response.status(200).json({message: `Welcome ${userData.userName}`});
         }
-
+    
     } catch (error) {
-        console.log(error.message);
-        response.status(400).json({message: "Error occurred!"})
+        response.status(400).json({message: error.message})
     }
+    
 }
 
 // function to login user takes request data and confirms user exists in database,

@@ -60,13 +60,12 @@ async function verifyUserJWT(userJWT){
     let userJwtVerified = jwt.verify(userJWT, process.env.JWT_SECRET, {complete: true});
     let decryptedPayload = decryptString(userJwtVerified.payload.data);
     let userData = JSON.parse(decryptedPayload);
-    let targetUser = await UserModel.findById(userData.userID).exec();
+    let targetUser = await UserModel.findById(userData.userId).exec();
 
     if (targetUser){
         return userData;
     } else {
         let error = new Error("Invalid Access");
-        error.statusCode = 401;
         return error
     }
 }

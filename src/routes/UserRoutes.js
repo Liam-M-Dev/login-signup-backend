@@ -1,5 +1,8 @@
 const express = require("express");
 const router = express.Router();
+// enable cookie-parser for use in app functionality
+const cookieParser = require("cookie-parser");
+router.use(cookieParser());
 
 // Imported functions from UserController
 const {
@@ -12,13 +15,9 @@ const {
 // Imported middleware
 const {
     loginMiddleware, checkUserFields, checkValidEmail,
-    checkValidUsername, passwordLengthCheck, verifyAndExtractUserData
+    checkValidUsername, passwordLengthCheck
 } = require("../middleware/UserMiddleware");
 
-// const {
-//     errorsArray,
-//     errorsLength
-// } = require("../middleware/ErrorHandling");
 
 // Route to get all users
 // Made for development purposes.
@@ -27,7 +26,7 @@ router.get("/", getAllUsers);
 
 // // Route to get single user
 // // returns username of user to display in frontend component
-router.get("/user", verifyAndExtractUserData, getUserById);
+router.get("/user", getUserById);
 
 // Route to allow login of single user
 // Takes login information and runs through middleware, 
