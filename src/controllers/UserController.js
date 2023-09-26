@@ -1,6 +1,6 @@
 // Import user model
 const {UserModel} = require("../models/User");
-const { hashString } = require("../services/AuthServices");
+const { hashString, generateUserJWT, verifyUserJWT } = require("../services/AuthServices");
 
 // Basic function to get all users
 // Returns list of users for development purposes, will remove at later date
@@ -14,6 +14,24 @@ const getAllUsers = async (request, response) => {
     }    
 }
 
+// Function to return a single user from database
+// Intended data to be exposed for client side will be username
+const getUserById = async (request, response) => {
+    try {
+        let token = request.cookies.access_token;
+        if (!token){
+            response.status(403).json({message: "No valid token, please sign in or sign up"})
+        } else {
+            let userData = await verifyUserJWT(token);
+            response.status(200).json({message: `Welcome ${userData.userName}`});
+        }
+    
+    } catch (error) {
+        response.status(400).json({message: error.message})
+    }
+    
+}
+
 // function to login user takes request data and confirms user exists in database,
 // validation checks run through middleware.
 // Returns welcome message with JWT return to be implemented
@@ -21,8 +39,18 @@ const loginUser = async (request, response) => {
     try {
         let savedUser = await UserModel.findOne({email: request.body.email}).exec();
 
-        // *To Do* Implement JWT generation and attach in response method 
-        response.status(200).json({message: `welcome ${savedUser.userName}!`});
+        let token = generateUserJWT({
+            userId: savedUser.id,
+            userName: savedUser.userName
+        })
+        
+        response.status(200)
+        .cookie("access_token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict"
+        })
+        .json({message: `welcome ${savedUser.userName}!`});
     } catch (error) {
         console.log(error)
         response.status(404).json({message: "User not found", error: error.message});
@@ -48,7 +76,18 @@ const userCreation = (async (request, response) => {
         let userSaved = new UserModel(newUser);
         await userSaved.save();
         console.log(userSaved);
-        response.status(200).json({
+        
+        let token = generateUserJWT({
+            userId: userSaved.id,
+            userName: userSaved.userName
+        })
+        response.status(200)
+        .cookie("access_token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict"
+        })
+        .json({
             message: "User saved successfully"
         });
 
@@ -63,6 +102,7 @@ const userCreation = (async (request, response) => {
 
 module.exports = {
     getAllUsers,
+    getUserById,
     loginUser,
     userCreation
 }
